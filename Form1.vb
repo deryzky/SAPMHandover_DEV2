@@ -172,7 +172,8 @@ Public Class Form1
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)))
                 End If
                 Dim sNamaFileZip As String
-                Export_Only_Cabang(mystr, sNamaFileZip)
+                Dim sPassword As String
+                Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
 
 
 
@@ -189,13 +190,13 @@ Public Class Form1
                 Dim sNamaFile As String
                 Dim sNamaFileZip2 As String
                 Dim sNamaFileZipFileInfoData As String
-                Dim sPassword As String
+                'Dim sPassword As String
                 Dim a As Integer
                 Dim b As Integer
 
                 'siapkan nama file dan password zip
                 sNamaFile = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "" & ".xlsx"
-                sPassword = "Pwd" & mystr & cmbTahun.Text & Trim(bulan)
+                'sPassword = "Pwd" & mystr & cmbTahun.Text & Trim(bulan)
                 'MsgBox(sPassword)
                 'End
                 'sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
@@ -547,7 +548,7 @@ Public Class Form1
             GC.Collect()
         End Try
     End Sub
-    Public Sub Export_Only_Cabang(ByRef mystr As String, ByRef sNamaFileZip As String)
+    Public Sub Export_Only_Cabang(ByRef mystr As String, ByRef sNamaFileZip As String, ByRef sPassword As String)
         'MsgBox(mystr)
 
 
@@ -637,7 +638,7 @@ Public Class Form1
                 Dim sNamaFile As String
                 'Dim sNamaFileZip As String
                 Dim sNamaFileZipFileInfoData As String
-                Dim sPassword As String
+                'Dim sPassword As String
 
                 Dim bulan As String
                 bulan = Convert_Date_Str2Int(cmbBulan.Text)
@@ -650,7 +651,7 @@ Public Class Form1
                 'End If
                 sNamaFile = Replace(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & Format(mystr, "00") & "\" & Format(mystr2, "000") & "\Cabang_" & mystr & "_" & mystr2 & "_" & mystr2 & "_" & cmbTahun.Text & (Trim(bulan)) & ".xls", " ", "")
                 sPassword = "Pwd" & mystr & mystr2 & cmbTahun.Text & (Trim(bulan))
-                MsgBox(sPassword)
+                'MsgBox(sPassword)
                 'sNamaFileZip = Replace(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)) & "\Cabang_" & mystr & "_" & mystr2 & "_" & cmbTahun.Text & (Trim(bulan)) & ".zip", " ", "")
                 sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & "_" & a & ".zip"
                 a = a + 1
@@ -939,8 +940,9 @@ Public Class Form1
 
     Private Sub zipfilee(ByRef sNamaFileZip As String)
         Dim mystr As String
+        Dim sPassword As String
         'Dim sNamaFileZip As String
-        Export_Only_Cabang(mystr, sNamaFileZip)
+        Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
 
         MsgBox(sNamaFileZip)
         ZipFile.CreateFromDirectory("C:\DataSAPM\",
@@ -948,7 +950,7 @@ Public Class Form1
                                CompressionLevel.Optimal,
                                False)
         Dim sNamaFileAsli As String = "C:\DataSAPM\test.txt"
-        Dim sPassword As String = "123"
+        'Dim sPassword As String = "123"
         Dim sNamaFileZipa As String = "c:\SAPM\KB\tes.zip"
         Dim tzt As String = txtLokasiFileWinrar.Text
 
@@ -973,6 +975,10 @@ Public Class Form1
         gpCompressFileToZip(tzt, sNamaFileAsli, sPassword, sNamaFileZipa)
     End Sub
     Public Sub gpCompressFileToZip(ByRef sLokasiWinrar As String, ByRef sNamaFileAsli As String, ByRef sPassword As String, ByRef sNamaFileZip As String)
+        Dim mystr As String
+        'Dim sPassword As String
+        'Dim sNamaFileZip As String
+        Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
         Shell(sLokasiWinrar & " a -p" & sPassword & " " & sNamaFileZip & " " & sNamaFileAsli)
     End Sub
 
