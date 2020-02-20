@@ -31,40 +31,43 @@ Public Class Form1
     End Sub
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Call clear()
+
+
         For i As Integer = 1 To 12
             cmbBulan.Items.Add(MonthName(i, False))
         Next
+
         For i = 2014 To 2024
             cmbTahun.Items.Add(i)
         Next i
     End Sub
-    Private Function DataIsOK() As Boolean
-        DataIsOK = True
+    'Private Function DataIsOK() As Boolean
+    '    DataIsOK = True
 
-        If Trim(txtNamaTabel.Text) = "" Then
-            DataIsOK = False
-            MsgBox("Nama Database dan Nama Tabel belum diisi", vbExclamation, Me.Text)
-            Exit Function
-        End If
+    '    If Trim(txtNamaTabel.Text) = "" Then
+    '        DataIsOK = False
+    '        MsgBox("Nama Database dan Nama Tabel belum diisi", vbExclamation, Me.Text)
+    '        Exit Function
+    '    End If
 
-        If Trim(cmbBulan.Text) = "" Then
-            DataIsOK = False
-            MsgBox("Bulan Periode belum diisi", vbExclamation, Me.Text)
-            Exit Function
-        End If
+    '    If Trim(cmbBulan.Text) = "" Then
+    '        DataIsOK = False
+    '        MsgBox("Bulan Periode belum diisi", vbExclamation, Me.Text)
+    '        Exit Function
+    '    End If
 
-        If Trim(cmbTahun.Text) = "" Then
-            DataIsOK = False
-            MsgBox("Tahun Periode belum diisi", vbExclamation, Me.Text)
-            Exit Function
-        End If
+    '    If Trim(cmbTahun.Text) = "" Then
+    '        DataIsOK = False
+    '        MsgBox("Tahun Periode belum diisi", vbExclamation, Me.Text)
+    '        Exit Function
+    '    End If
 
-        If Trim(txtLokasiFolderKB.Text) = "" Then
-            DataIsOK = False
-            MsgBox("Lokasi Folder KB belum diisi", vbExclamation, Me.Text)
-            Exit Function
-        End If
-    End Function
+    '    If Trim(txtLokasiFolderKB.Text) = "" Then
+    '        DataIsOK = False
+    '        MsgBox("Lokasi Folder KB belum diisi", vbExclamation, Me.Text)
+    '        Exit Function
+    '    End If
+    'End Function
     Private Sub cmdProses_Click(sender As Object, e As EventArgs) Handles cmdProses.Click
         'If MsgBox("Proses Data " & Trim(GetHashCode(cmbBulan.Text, 1, "||")) & " " & cmbTahun.Text & " ?", vbQuestion + vbYesNo, "Confirmation") = vbYes Then
         'If MsgBox("Proses Data " & (Trim(cmbBulan.Text & " " & cmbTahun.Text & " ?")),
@@ -96,7 +99,7 @@ Public Class Form1
         ts.WriteLine("Region_Code|Branch_Code|File_Name|Password_File")
         ts.Close()
     End Sub
-    Public Sub Export_Only_Wilayah_UpdateDita(ByRef mystr As String)
+    Public Sub Export_Only_Wilayah_UpdateDita(ByRef wilayah As String)
         'Set up connection string
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
@@ -105,17 +108,13 @@ Public Class Form1
         Dim connectionString As String = GetAppKey("CONN_STR")
         Dim query As String = GetAppKey("QUERY")
         'Dim query2 As String = GetAppKey("QUERY", "Where Region_Kelolaan = '" & mystr & "'")
-
         Dim conn As TdConnection
-        Dim sSQL2 As String
-
-
         Try
 
             conn = New TdConnection(connectionString)
             conn.Open()
             Console.WriteLine(myText & "Connection opened, Process Dataset" & vbCrLf)
-            'Console.WriteLine(myQuery)
+
 
             Dim tout As Integer = CInt(GetAppKey("TIMEOUT"))
             Dim command = New TdCommand(query, conn)
@@ -123,18 +122,17 @@ Public Class Form1
             Dim reader As TdDataReader = command.ExecuteReader
             Dim i As Integer
             Dim strDlm As String = GetAppKey("DELIMITER")
-            'Dim mystr As String = ""
+
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
-            'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
-            'Using sw As StreamWriter = New StreamWriter(MyFileName)
+
 
             While reader.Read()
 
-                mystr = ""
-                'reader.FieldCount
+                wilayah = ""
+
                 For i = 0 To reader.FieldCount - 1
-                    'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
+
                     If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
                         If i < reader.FieldCount - 1 Then
                             mystrHeader = mystrHeader & reader.GetName(i) & strDlm
@@ -143,150 +141,30 @@ Public Class Form1
                         End If
                     End If
                     If i < reader.FieldCount - 1 Then
-                        mystr = mystr & reader.GetValue(i) & strDlm
+                        wilayah = wilayah & reader.GetValue(i) & strDlm
                     Else
-                        mystr = mystr & reader.GetValue(i)
+                        wilayah = wilayah & reader.GetValue(i)
                     End If
                 Next
 
                 If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
                     iHeader = 1
-                    'sw.WriteLine(mystrHeader)
                 End If
-                lblWilayah.Text = mystr
-                'mystr = IsiField(reader("Region_Kelolaan"))
-                'MsgBox(mystr)
-
-                'sw.WriteLine(mystr)
-
-                sSQL2 = "Select * from " & txtNamaTabel.Text & " " &
-                    "Where Region_Kelolaan = '" & mystr & "'"
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel", vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
                 End If
-                If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)), vbDirectory) = "" Then
-                    MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)))
+                If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
+                    MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)))
                 End If
-                If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)), vbDirectory) = "" Then
-                    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)))
+                If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
+                    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
                 End If
-                Dim sNamaFileZip As String
-                Dim sPassword As String
-                Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
 
+                Export_Only_Cabang(wilayah)
 
-
-                Dim bulan As String
-                bulan = Convert_Date_Str2Int(cmbBulan.Text)
-
-
-                'MsgBox(bulan)
-                'End
-                ' strop = cmbBulan.Text
-                'coba.Text = cmbBulan.Text
-                'coba.Text = str
-                'MsgBox("sini")
-                Dim sNamaFile As String
-                Dim sNamaFileZip2 As String
-                Dim sNamaFileZipFileInfoData As String
-                'Dim sPassword As String
-                Dim a As Integer
-                Dim b As Integer
-
-                'siapkan nama file dan password zip
-                sNamaFile = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "" & ".xlsx"
-                'sPassword = "Pwd" & mystr & cmbTahun.Text & Trim(bulan)
-                'MsgBox(sPassword)
-                'End
-                'sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
-                sNamaFileZipFileInfoData = "Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
-
-                sNamaFile = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "" & ".xlsx"
-                sNamaFileZip2 = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
-                'MsgBox(sNamaFileZip)
-                'End
-                b = 0
-                a = 0
-
-                'sNamaFileZip = (Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & (Trim(bulan)) & "_" & a & ".zip")
-
-                'sNamaFileZipFileInfoData = "Wilayah_" & mystr & "_" & cmbTahun.Text & (Trim(bulan)) & "_" & a & "" & ".zip"
-                'MsgBox(sNamaFileZipFileInfoData)
-                'gpCompressFileToZip(txtLokasiFileWinrar.Text, sNamaFile, sPassword, sNamaFileZip)
-                'IsiBNISegmentasiDAT(String.Format("{0:00}", CInt(mystr)), "0", sNamaFileZipFileInfoData, sPassword)
-
-                'IsiBNISegmentasiDAT(Format(mystr, "00"), "0", sNamaFileZipFileInfoData, sPassword)
-                'MsgBox("Selesai")
-                'End
-                'gpCompressFileToZip txtLokasiFileWinrar, sNamaFile, sPassword, sNamaFileZip
-                'IsiBNISegmentasiDAT Format(sKodeWilayah, "00"), "0", sNamaFileZipFileInfoData, sPassword
-                'coba.Text = sNamaFileZipFileInfoData
-
-                'Dim oExcel As Object
-                'Dim oBook As Object
-                'Dim sht As Object
-
-
-
-
-                sNamaFile = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & Format(mystr, "00") & "\Wilayah_" & mystr & "_" & a & "" & ".xlsx"
-                'coba.Text = sNamaFile
-                'oBook.SaveAs.sNamaFile
-                'oBook.Close
-                'oExcel.Quit
 
             End While
-
-            Dim queryex As String = GetAppKey("QUERYEXCEL")
-            Dim cmd = New TdCommand(queryex, conn)
-            Dim read As TdDataReader = cmd.ExecuteReader
-
-            Dim xlApp As Excel.Application
-            Dim xlWorkBook As Excel.Workbook
-            Dim xlWorkSheet As Excel.Worksheet
-            Dim misValue As Object = System.Reflection.Missing.Value
-
-            xlApp = New Excel.Application
-            'xlApp = New Excel.ApplicationClass
-            xlWorkBook = xlApp.Workbooks.Add(misValue)
-            xlWorkSheet = xlWorkBook.Sheets("sheet1")
-
-            'Dim command = New TdCommand(query, conn)
-            'command.CommandTimeout = tout
-            'Dim reader As TdDataReader = command.ExecuteReader
-            xlWorkSheet.PageSetup.CenterHeader = "kon"
-
-            'da = New TdDataAdapter(queryex, conn)
-            'da.Fill(ds, "PRD_EDW_RPT_MR_VR.SAPM_DETAIL_NASABAH")
-
-            'For i = 0 To ds.Tables(0).Columns.Count - 1
-            '    Dim str As String = ds.Tables(0).Columns(i).ColumnName
-            '    xlWorkSheet.Cells(1, i + 1) = str
-            'Next
-
-            ''For i = 0 To ds.Tables(0).Rows.Count - 1
-            ''        For j = 0 To ds.Tables(0).Columns.Count - 1
-            ''            xlWorkSheet.Cells(i + 1, j + 1) =
-            ''            ds.Tables(0).Rows(i).Item(j)
-            ''        Next
-            ''    Next
-            'xlWorkSheet.SaveAs("c:\SAPM\KB\vbexcel.xlsx")
-            'xlWorkBook.Close()
-            'xlApp.Quit()
-
-            'releaseObject(xlApp)
-            'releaseObject(xlWorkBook)
-            'releaseObject(xlWorkSheet)
-
-
-
-            'Dim style As String = "g2"
-            'Dim test As String
-            'test = String.Format("{0:00}", CInt(mystr))
-            ''MsgBox(test)
-            'sw.Close()
-            'End Using
 
             reader.Close()
             conn.Close()
@@ -548,36 +426,18 @@ Public Class Form1
             GC.Collect()
         End Try
     End Sub
-    Public Sub Export_Only_Cabang(ByRef mystr As String, ByRef sNamaFileZip As String, ByRef sPassword As String)
-        'MsgBox(mystr)
-
-
-        'Set up connection string
+    Public Sub Export_Only_Cabang(ByRef wilayah As String)
+        Dim cabang As String
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
         Dim strConnAttr As String = ""
         Dim strConnVal As String = ""
         Dim connectionString As String = GetAppKey("CONN_STR")
         Dim query As String
-        '= (GetAppKey("QUERY2") & mystr)
-
-
         Dim args_query(1) As String
-        args_query(0) = mystr
+        args_query(0) = wilayah
         query = QueryBuilder(args_query,
                              (GetAppKey("QUERY2")))
-
-        'MsgBox(query)
-        'End
-
-        'Dim abc As String
-        'abc = query "where region_kelolaan = '" & mystr & "'"
-        '    "Select * from " & txtNamaTabel.Text & " " &
-        '            "Where Region_Kelolaan = '" & mystr & "'"
-
-        '"Where Region_Kelolaan = '" & mystr & "'"
-        'MsgBox(query)
-        'End
         Dim conn As TdConnection
 
         Try
@@ -593,20 +453,16 @@ Public Class Form1
             Dim reader As TdDataReader = command.ExecuteReader
             Dim i As Integer
             Dim strDlm As String = GetAppKey("DELIMITER")
-            Dim mystr2 As String = ""
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
-            'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
-            'Using sw As StreamWriter = New StreamWriter(MyFileName)
             Dim a As Integer
-            'Dim b As Integer
 
 
             a = 1
             While reader.Read()
 
-                mystr2 = ""
-                'reader.FieldCount
+                cabang = ""
+
                 For i = 0 To reader.FieldCount - 1
                     'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
                     If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
@@ -617,66 +473,38 @@ Public Class Form1
                         End If
                     End If
                     If i < reader.FieldCount - 1 Then
-                        mystr2 = mystr2 & reader.GetValue(i) & strDlm
+                        cabang = cabang & reader.GetValue(i) & strDlm
                     Else
-                        mystr2 = mystr2 & reader.GetValue(i)
+                        cabang = cabang & reader.GetValue(i)
                     End If
-
                 Next
+
+                'textt(mystr, mystr2)
+
                 If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
                     iHeader = 1
-
                 End If
 
-                If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)), vbDirectory) = "" Then
-                    MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)))
+                If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
+                    MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
                 End If
-                If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)), vbDirectory) = "" Then
-                    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)))
+                If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
+                    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
                 End If
 
-                Dim sNamaFile As String
-                'Dim sNamaFileZip As String
-                Dim sNamaFileZipFileInfoData As String
-                'Dim sPassword As String
-
+                Dim sNamaFileZip As String
+                Dim sPassword As String
                 Dim bulan As String
                 bulan = Convert_Date_Str2Int(cmbBulan.Text)
-
-
-                'If a = 0 Then
-                '    a = 1
-
-
-                'End If
-                sNamaFile = Replace(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & Format(mystr, "00") & "\" & Format(mystr2, "000") & "\Cabang_" & mystr & "_" & mystr2 & "_" & mystr2 & "_" & cmbTahun.Text & (Trim(bulan)) & ".xls", " ", "")
-                sPassword = "Pwd" & mystr & mystr2 & cmbTahun.Text & (Trim(bulan))
-                'MsgBox(sPassword)
-                'sNamaFileZip = Replace(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)) & "\Cabang_" & mystr & "_" & mystr2 & "_" & cmbTahun.Text & (Trim(bulan)) & ".zip", " ", "")
-                sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\Wilayah_" & mystr & "_" & cmbTahun.Text & Trim(bulan) & "_" & a & ".zip"
+                sPassword = "Pwd" & wilayah & cabang & cmbTahun.Text & (Trim(bulan))
+                sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & a & ".zip"
                 a = a + 1
 
-                'Dim mystr2 As String
-                namaCabangKelolaan(mystr, mystr2)
-                'MsgBox(sNamaFileZip)
-                'zipfilee(sNamaFileZip)
-
-                'yg lama    'sNamaFileZipFileInfoData = Replace("/home/cmm/DATA/KB/6" & Format(sKodeWilayah, "00") & "/" & Format(sKodeCabang, "000") & "/Cabang_" & sKodeWilayah & "_" & sKodeCabang & "_" & sNamaCabang & "_" & cmbTahun.Text & Trim(gfGetParseData(cmbBulan.Text, 2, "||")) & ".zip", " ", "")
-                'sNamaFileZipFileInfoData = Replace("Cabang_" & sKodeWilayah & "_" & sKodeCabang & "_" & sNamaCabang & "_" & cmbTahun.Text & Trim(gfGetParseData(cmbBulan.Text, 2, "||")) & ".zip", " ", "")
-
-
-
-                'MsgBox(mystr2)
-
-
-                'If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)), vbDirectory) = "" Then
-                '    MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(mystr)))
-                'End If
-                'If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr2)), vbDirectory) = "" Then
-                '    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr2)))
-                'End If
-
-                'sw.WriteLine(mystr)
+                'Dim lokasiWinrar As String = txtLokasiFileWinrar.Text
+                'Dim sNamaFileAsli As String = "C:\DataSAPM\test.txt"
+                namaCabangKelolaan(wilayah, cabang)
+                'txttext(wilayah, cabang)
+                'gpCompressFileToZip(lokasiWinrar, sNamaFileAsli, sPassword, sNamaFileZip)
 
             End While
 
@@ -691,45 +519,6 @@ Public Class Form1
         End Try
 
     End Sub
-
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        'excel()
-        'RunSQLReader()
-        'Dim acs As String
-
-        'aku(acs As String)
-
-        'MsgBox(acs)
-        'Dim kok As String
-        'saya(kok)
-
-
-        'kok = acs
-        'Dim bkn As String
-
-        'Dim zxe As String
-        Dim abc As String
-        abc = ""
-        'zxe = ""
-
-        'Export_Only_Cabang(abc, zxe)
-        'saya(abc)
-        lll(abc)
-        MsgBox(abc)
-    End Sub
-
-    Private Sub lll(ByRef zxe As String)
-        'Dim zxe As String
-        saya(zxe)
-
-
-    End Sub
-    Public Sub saya(ByRef zxe As String)
-        'Dim zxe As String
-        zxe = "berung"
-    End Sub
-
-
 
     Function QueryBuilder(ByVal args() As String, ByVal MyQuery As String) As String
         Try
@@ -750,7 +539,7 @@ Public Class Form1
         End Try
     End Function
 
-    Private Sub namaCabangKelolaan(ByRef mystr As String, ByRef mystr2 As String)
+    Private Sub namaCabangKelolaan(ByRef wilayah As String, ByRef cabang As String)
         Dim sNamaFileZip As String
         'Export_Only_Wilayah_UpdateDita(mystr)
         'Export_Only_Cabang(snamafile, mystr2)
@@ -765,8 +554,8 @@ Public Class Form1
         '= GetAppKey("QUERY3")
 
         Dim args_query(1) As String
-        args_query(0) = mystr
-        args_query(1) = mystr2
+        args_query(0) = wilayah
+        args_query(1) = cabang
         query = QueryBuilder(args_query,
                              (GetAppKey("QUERY3")))
         'MsgBox(query)
@@ -816,25 +605,23 @@ Public Class Form1
                     iHeader = 1
                     'sw.WriteLine(mystrHeader)
                 End If
-                Dim bulan As String
-                bulan = Convert_Date_Str2Int(cmbBulan.Text)
 
-                'If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)), vbDirectory) = "" Then
-                '    MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)))
-                'End If
-                'Dim sNamaFileZip As String
-                sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)) & "\Cabang_" & mystr & "_" & mystr2 & "_" & mystr3 & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
-                'MsgBox(sNamaFileZip)
-                zipnamacabangfilee(sNamaFileZip)
-                'Dim ts As System.IO.StreamWriter
-                'ts = My.Computer.FileSystem.OpenTextFileWriter(Trim(txtLokasiFolderKB.Text) & "coba.txt", True)
-                'Dim fso As New Object
+                mystr3 = Replace(mystr3, " ", "")
 
-                'ts.WriteLine(mystr3)
-                'ts.Close()
+                'MsgBox(mystr3)
 
-                'MsgBox("masuk")
-                'MsgBox(query)
+                txttext(wilayah, cabang, mystr3)
+
+                'Dim bulan As String
+                'bulan = Convert_Date_Str2Int(cmbBulan.Text)
+                'sNamaFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
+                'Dim sPassword As String
+                'sPassword = "Pwd" & wilayah & cabang & cmbTahun.Text & (Trim(bulan))
+
+                'Dim lokasiWinrar As String = txtLokasiFileWinrar.Text
+                'Dim sNamaFileAsli As String = "C:\DataSAPM\test.txt"
+
+                'gpCompressFileToZip(lokasiWinrar, sNamaFileAsli, sPassword, sNamaFileZip)
             End While
 
             'sw.Close()
@@ -866,7 +653,7 @@ Public Class Form1
     Private Sub zip_Click(sender As Object, e As EventArgs) Handles zip.Click
         'cobazip()
         'RunSQLReader()
-        textt()
+        'textt()
 
 
         'Dim mystr As String
@@ -940,9 +727,8 @@ Public Class Form1
 
     Private Sub zipfilee(ByRef sNamaFileZip As String)
         Dim mystr As String
-        Dim sPassword As String
         'Dim sNamaFileZip As String
-        Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
+        ' Export_Only_Cabang(mystr, sNamaFileZip)
 
         MsgBox(sNamaFileZip)
         ZipFile.CreateFromDirectory("C:\DataSAPM\",
@@ -950,7 +736,7 @@ Public Class Form1
                                CompressionLevel.Optimal,
                                False)
         Dim sNamaFileAsli As String = "C:\DataSAPM\test.txt"
-        'Dim sPassword As String = "123"
+        Dim sPassword As String = "123"
         Dim sNamaFileZipa As String = "c:\SAPM\KB\tes.zip"
         Dim tzt As String = txtLokasiFileWinrar.Text
 
@@ -974,14 +760,13 @@ Public Class Form1
 
         gpCompressFileToZip(tzt, sNamaFileAsli, sPassword, sNamaFileZipa)
     End Sub
+    'Public Sub gpCompressFileToZip(ByRef sLokasiWinrar As String, ByRef sNamaFileAsli As String, ByRef sPassword As String, ByRef sNamaFileZip As String)
+    '    Shell(sLokasiWinrar & " a -p" & sPassword & " " & sNamaFileZip & " " & sNamaFileAsli)
+    'End Sub
+
     Public Sub gpCompressFileToZip(ByRef sLokasiWinrar As String, ByRef sNamaFileAsli As String, ByRef sPassword As String, ByRef sNamaFileZip As String)
-        Dim mystr As String
-        'Dim sPassword As String
-        'Dim sNamaFileZip As String
-        Export_Only_Cabang(mystr, sNamaFileZip, sPassword)
         Shell(sLokasiWinrar & " a -p" & sPassword & " " & sNamaFileZip & " " & sNamaFileAsli)
     End Sub
-
 
     Private Sub zipnamacabangfilee(ByRef sNamaFileZip As String)
         'Using ZipArchive = ZipFile.Open("c:\SAPM\KB\tes.zip", ZipArchiveMode.Update)
@@ -992,28 +777,129 @@ Public Class Form1
         'Export_Only_Cabang(mystr, sNamaFileZip)
 
         'MsgBox(sNamaFileZip)
-        Dim sNamaFileAsli As String = "C:\DataSAPM\test.txt"
-        Dim sPassword As String = "123"
-        Dim sNamaFileZipa As String = "c:\SAPM\KB\tes.zip"
-        Dim tzt As String = txtLokasiFileWinrar.Text
-
-        gpCompressFileToZip(tzt, sNamaFileAsli, sPassword, sNamaFileZipa)
-
         ZipFile.CreateFromDirectory("C:\DataSAPM\",
                                sNamaFileZip,
                                CompressionLevel.Optimal,
                                False)
     End Sub
 
-    Private Sub textt()
+    'Private Sub textt(ByRef mystr As String, ByRef mystr2 As String)
+    '    'Set up connection string
+    '    Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
+    '    Dim strConn As String = ""
+    '    Dim strConnAttr As String = ""
+    '    Dim strConnVal As String = ""
+    '    Dim connectionString As String = GetAppKey("CONN_STR")
+    '    Dim QUERY As String = GetAppKey("QUERYTXTCABANG")
+
+    '    Dim args_query(2) As String
+    '    args_query(0) = mystr
+    '    QUERY = QueryBuilder(args_query, (GetAppKey("QUERY2")))
+
+    '    Dim conn As TdConnection
+
+    '    Try
+
+    '        conn = New TdConnection(connectionString)
+    '        conn.Open()
+    '        Console.WriteLine(myText & "Connection opened, Process Dataset" & vbCrLf)
+    '        'Console.WriteLine(myQuery)
+
+    '        Dim tout As Integer = CInt(GetAppKey("TIMEOUT"))
+    '        Dim command = New TdCommand(QUERY, conn)
+    '        command.CommandTimeout = tout
+    '        Dim reader As TdDataReader = command.ExecuteReader
+    '        Dim i As Integer
+    '        Dim strDlm As String = GetAppKey("DELIMITER")
+    '        Dim mystr3 As String = ""
+    '        Dim mystrHeader As String = ""
+    '        Dim iHeader As Integer = 0
+    '        'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
+    '        'Using sw As StreamWriter = New StreamWriter(MyFileName)
+
+    '        While reader.Read()
+
+    '            mystr = ""
+    '            'reader.FieldCount
+    '            For i = 0 To reader.FieldCount - 1
+    '                'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
+    '                If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
+    '                    If i < reader.FieldCount - 1 Then
+    '                        mystrHeader = mystrHeader & reader.GetName(i) & strDlm
+    '                    Else
+    '                        mystrHeader = mystrHeader & reader.GetName(i)
+    '                    End If
+    '                End If
+    '                If i < reader.FieldCount - 1 Then
+    '                    mystr3 = mystr3 & reader.GetValue(i) & strDlm
+    '                Else
+    '                    mystr3 = mystr3 & reader.GetValue(i)
+    '                End If
+    '            Next
+
+    '            Dim bulan As String
+    '            bulan = Convert_Date_Str2Int(cmbBulan.Text)
+
+    '            Dim ts As System.IO.StreamWriter
+    '            Dim pathWilayah As String = "C:\SAPM\KB\6" & String.Format("{0:00}", CInt(mystr)) & "\" & String.Format("{0:000}", CInt(mystr2)) & "\"
+    '            Dim filetxt As String = "Cabang_" & mystr & "_" & mystr2 & "NamaCabanga_" & cmbTahun.Text & "" & bulan
+    '            ts = My.Computer.FileSystem.OpenTextFileWriter(pathWilayah & "\" & filetxt, True)
+
+    '            If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
+    '                iHeader = 1
+    '                ts.WriteLine(mystrHeader)
+    '            End If
+
+    '            ts.WriteLine(mystr3)
+
+    '            'ts.WriteLine(mystrHeader)
+    '            ts.Close()
+
+    '        End While
+
+    '        'sw.Close()
+    '        'End Using
+    '        reader.Close()
+    '        conn.Close()
+    '        Console.WriteLine(myText & "Connection closed." & vbCrLf)
+
+    '    Catch ex As TdException
+    '        Console.WriteLine(myText & "Error: " & ex.ToString & vbCrLf)
+    '    End Try
+
+    'End Sub
+
+    Private Sub txttext(ByRef wilayah As String, ByRef cabang As String, ByRef mystr3 As String)
         'Set up connection string
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
         Dim strConnAttr As String = ""
         Dim strConnVal As String = ""
         Dim connectionString As String = GetAppKey("CONN_STR")
-        Dim QUERY As String = GetAppKey("QUERYTXTCABANG")
+        'Dim query As String = GetAppKey("QUERYTXTCABANG")
+        Dim query As String
         Dim conn As TdConnection
+
+        Dim bulan As String
+        bulan = Convert_Date_Str2Int(cmbBulan.Text)
+        Dim periode As String
+        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+
+        Dim args_query(3) As String
+        args_query(0) = periode
+        args_query(1) = wilayah
+        args_query(2) = cabang
+        query = QueryBuilder(args_query,
+                             (GetAppKey("QUERYTXTCABANG")))
+
+
+        Dim sNmaFileTxt As String
+        sNmaFileTxt = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".txt"
+        'MsgBox(sNmaFileTxt)
+        Dim ts As System.IO.StreamWriter
+        ts = My.Computer.FileSystem.OpenTextFileWriter(sNmaFileTxt, True)
+        'MsgBox(query)
+        'Console.WriteLine(query)
 
         Try
 
@@ -1023,7 +909,7 @@ Public Class Form1
             'Console.WriteLine(myQuery)
 
             Dim tout As Integer = CInt(GetAppKey("TIMEOUT"))
-            Dim command = New TdCommand(QUERY, conn)
+            Dim command = New TdCommand(query, conn)
             command.CommandTimeout = tout
             Dim reader As TdDataReader = command.ExecuteReader
             Dim i As Integer
@@ -1053,23 +939,27 @@ Public Class Form1
                         mystr = mystr & reader.GetValue(i)
                     End If
                 Next
-                Dim ts As System.IO.StreamWriter
-                ts = My.Computer.FileSystem.OpenTextFileWriter(Trim(txtLokasiFolderKB.Text) & "bnisegmentasi.txt", True)
+                'MsgBox(mystr)
 
                 If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
                     iHeader = 1
                     ts.WriteLine(mystrHeader)
-                End If
 
+                    'sw.WriteLine(mystrHeader)
+                End If
                 ts.WriteLine(mystr)
 
-                'ts.WriteLine(mystrHeader)
-                ts.Close()
+
+                'Console.WriteLine(mystr)
+
+                'sw.WriteLine(mystr)
 
             End While
+            ts.Close()
+            MsgBox("selesai")
 
-            'sw.Close()
-            'End Using
+            ' sw.Close()
+            '  End Using
             reader.Close()
             conn.Close()
             Console.WriteLine(myText & "Connection closed." & vbCrLf)
@@ -1080,17 +970,5 @@ Public Class Form1
 
     End Sub
 
-
-    'Function zipSandy(sNamaFileZip As String)
-    '    If File.Exists("C:\DataSAPM\20191231_with_dormanbnisegmentasi.dat") Then
-    '        ZipFile.CreateFromDirectory("C:\SAPM\KB\FileExcel",
-    '                           "c:\SAPM\KB\tes.zip",
-    '                           CompressionLevel.Optimal,
-    '                           True)
-    '    Else
-    '        MsgBox("kosong")
-    '    End If
-
-    'End Function
 
 End Class
