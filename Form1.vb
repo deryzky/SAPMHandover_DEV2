@@ -71,8 +71,8 @@ Public Class Form1
         vbQuestion + vbYesNo, "Confirmation") = vbYes Then
                 lblWaktuMulai.Text = Now
                 lblWaktuMulaiConvert.Text = Now
-                'headerdat()
-                'Export_Only_Wilayah_UpdateDita()
+                headerdat()
+                Export_Only_Wilayah_UpdateDita()
                 total()
                 lblWaktuSelesaiConvert.Text = Now
                 lblWaktuSelesai.Text = Now
