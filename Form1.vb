@@ -78,6 +78,7 @@ Public Class Form1
         '            'Me.MousePosition = 
         '            'Application.DoEvents()
         '            'CreateBNISegmentasiDAT()
+        Me.Cursor = Cursors.WaitCursor
         headerdat()
         createDirWilayah()
 
@@ -187,9 +188,6 @@ Public Class Form1
         Dim sSQL2 As String
 
 
-
-
-
         'Dim queryex As String = GetAppKey("QUERYEXCEL")
         'Dim cmd = New TdCommand(queryex, conn)
         'Dim read As TdDataReader = cmd.ExecuteReader
@@ -221,13 +219,16 @@ Public Class Form1
             Dim mystr As String = ""
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
+            Dim row As Integer = 0
+            Dim col As Integer = 0
+
             'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
             'Using sw As StreamWriter = New StreamWriter(MyFileName)
 
             While read.Read()
 
                 mystr = ""
-                'reader.FieldCount
+
                 For i = 0 To read.FieldCount - 1
                     'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
                     If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
@@ -243,6 +244,14 @@ Public Class Form1
                         mystr = mystr & read.GetValue(i)
                     End If
 
+                    col = i
+                    'mystr = read.GetValue(i)
+                    xlWorkSheet.Cells(row, col).value = read.GetValue(i)
+
+
+                    'Console.WriteLine(row & "," & col & ":" & read.GetValue(i))
+
+                    row = row + 1
                 Next
 
                 If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
@@ -250,9 +259,8 @@ Public Class Form1
                     'sw.WriteLine(mystrHeader)
                 End If
 
-                xlWorkSheet.Cells(1, i + 1) = mystrHeader
-                MsgBox(mystr)
-
+                'xlWorkSheet.Cells(1, i + 1) = mystr
+                'MsgBox(mystr)
 
                 Dim da As New TdDataAdapter
                 Dim ds As New DataSet
@@ -284,13 +292,7 @@ Public Class Form1
                 '    Next
                 'Next
 
-                xlWorkSheet.SaveAs("c:\SAPM\KB\vbexcel.xlsx")
-                xlWorkBook.Close()
-                xlApp.Quit()
 
-                releaseObject(xlApp)
-                releaseObject(xlWorkBook)
-                releaseObject(xlWorkSheet)
 
 
 
@@ -301,8 +303,16 @@ Public Class Form1
                 'sw.Close()
                 'End Using
                 'read.Close()
-                conn.Close()
+
             End While
+            xlWorkSheet.SaveAs("c:\SAPM\KB\vbexcel.xlsx")
+            xlWorkBook.Close()
+                xlApp.Quit()
+
+                releaseObject(xlApp)
+                releaseObject(xlWorkBook)
+                releaseObject(xlWorkSheet)
+                conn.Close()
         Catch ex As TdException
             Console.WriteLine(myText & "Error: " & ex.ToString & vbCrLf)
         End Try
@@ -356,6 +366,7 @@ Public Class Form1
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
             Dim j As Integer = 1
+
             'Dim j As Integer
             'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
             'Using sw As StreamWriter = New StreamWriter(MyFileName)
@@ -372,7 +383,7 @@ Public Class Form1
                         Else
                             mystrHeader = reader.GetName(i)
                         End If
-                        xlWorkSheet.Cells(1, i + 1) = mystrHeader
+                        'xlWorkSheet.Cells(1, i + 1) = mystrHeader
                     End If
                     If i < reader.FieldCount - 1 Then
                         mystr = mystr & reader.GetValue(i)
@@ -380,8 +391,10 @@ Public Class Form1
                         mystr = mystr & reader.GetValue(i)
                     End If
                     'xlWorkSheet.Columns(1 + i) = mystrHeader 
-                    'j = j + 1
-                    xlWorkSheet.Cells(2, i + 1) = mystr
+                    j = j + 1
+                    xlWorkSheet.Cells(j, i + 1) = mystr
+
+
 
                 Next
 
@@ -402,7 +415,7 @@ Public Class Form1
                 '    End If
                 '    'xlWorkSheet.Columns(1 + i) = mystrHeader 
                 '    j = j + 1
-                '    xlWorkSheet.Cells(j, i + 2) = mystr
+                '    xlWorkSheet.Cells(j, i + 1) = mystr
                 'Next
 
                 If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
@@ -410,6 +423,7 @@ Public Class Form1
                     xlWorkSheet.Cells(1, i + 1) = mystrHeader
                     'sw.WriteLine(mystrHeader)
                 End If
+
 
                 'MsgBox(mystr)
 
@@ -951,10 +965,7 @@ Public Class Form1
         ts.Close()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        RunSQLReader()
 
-    End Sub
 
 
     Private Sub connection(ByRef conn As TdConnection)
@@ -1184,7 +1195,7 @@ Public Class Form1
             End While
 
         Catch ex As TdException
-
+            'Console.WriteLine(myText & "Error: " & ex.ToString & vbCrLf)
         End Try
 
     End Sub
@@ -1268,8 +1279,6 @@ Public Class Form1
 
             If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(nmCbg) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"), vbDirectory) = "" Then
                 gpCompressFileToZip(lokasiWinrar, sNmaFileTxt, sPassword, sNamaFileZip)
-            Else
-                MsgBox("datanya udah ada bro ")
             End If
 
             Dim sNamaFileZip2 As String
@@ -1278,21 +1287,65 @@ Public Class Form1
 
             CreateBNISegmentasiDAT(wilayah, cabang, sNamaFileZip2, sPassword)
 
-            'My.Computer.FileSystem.DeleteFile(sNmaFileTxt2)
-            'MsgBox("selesai")
 
-            ' sw.Close()
-            '  End Using
-            'reader.Close()
-            'conn.Close()
+            For i = 1 To 10000
+                System.Windows.Forms.Application.DoEvents()
+                My.Computer.FileSystem.DeleteFile(sNmaFileTxt2)
+            Next i
+
+
+
+
 
 
         Catch ex As TdException
-
+            'Console.WriteLine(myText & "Error: " & ex.ToString & vbCrLf)
         End Try
 
     End Sub
 
+    Private Sub DatatableToExcel(ByVal dtTemp As DataTable, ByVal StrPath As String)
+        Dim _excel As New Microsoft.Office.Interop.Excel.Application
+        Dim wBook As Microsoft.Office.Interop.Excel.Workbook
+        Dim wSheet As Microsoft.Office.Interop.Excel.Worksheet
+
+        wBook = _excel.Workbooks.Add()
+        wSheet = wBook.ActiveSheet()
+
+        Dim dt As System.Data.DataTable = dtTemp
+        Dim dc As System.Data.DataColumn
+        Dim dr As System.Data.DataRow
+        Dim colIndex As Integer = 0
+        Dim rowIndex As Integer = 0
+
+        For Each dc In dt.Columns
+            colIndex = colIndex + 1
+            _excel.Cells(1, colIndex) = dc.ColumnName
+        Next
+
+        For Each dr In dt.Rows
+            rowIndex = rowIndex + 1
+            colIndex = 0
+            For Each dc In dt.Columns
+                colIndex = colIndex + 1
+                _excel.Cells(rowIndex + 1, colIndex) = dr(dc.ColumnName)
+            Next
+        Next
 
 
+
+        wSheet.Columns.AutoFit()
+        Dim strFileName As String = StrPath & "datatable.xlsx"
+        If System.IO.File.Exists(strFileName) Then
+            System.IO.File.Delete(strFileName)
+        End If
+
+        wBook.SaveAs(strFileName)
+        wBook.Close()
+        _excel.Quit()
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        excel()
+    End Sub
 End Class
