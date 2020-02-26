@@ -22,12 +22,7 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.TextBox1 = New System.Windows.Forms.TextBox()
-        Me.zip = New System.Windows.Forms.Button()
-        Me.Label1 = New System.Windows.Forms.Label()
-        Me.coba = New System.Windows.Forms.TextBox()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.DataGridView1 = New System.Windows.Forms.DataGridView()
+        Me.components = New System.ComponentModel.Container()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.lblWaktuSelesai = New System.Windows.Forms.Label()
         Me.lblWaktuSelesaiConvert = New System.Windows.Forms.Label()
@@ -62,66 +57,14 @@ Partial Class Form1
         Me.cmdProses = New System.Windows.Forms.Button()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.lblHitungDataConvert = New System.Windows.Forms.Label()
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
+        Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.GroupBox5.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'TextBox1
-        '
-        Me.TextBox1.Location = New System.Drawing.Point(12, 422)
-        Me.TextBox1.Name = "TextBox1"
-        Me.TextBox1.Size = New System.Drawing.Size(790, 20)
-        Me.TextBox1.TabIndex = 27
-        '
-        'zip
-        '
-        Me.zip.AccessibleName = "zip"
-        Me.zip.Location = New System.Drawing.Point(591, 16)
-        Me.zip.Name = "zip"
-        Me.zip.Size = New System.Drawing.Size(141, 25)
-        Me.zip.TabIndex = 26
-        Me.zip.Text = "Button2"
-        Me.zip.UseVisualStyleBackColor = True
-        '
-        'Label1
-        '
-        Me.Label1.AccessibleName = "Label1"
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(563, 321)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(0, 13)
-        Me.Label1.TabIndex = 25
-        '
-        'coba
-        '
-        Me.coba.AccessibleName = "coba"
-        Me.coba.Location = New System.Drawing.Point(12, 396)
-        Me.coba.Name = "coba"
-        Me.coba.Size = New System.Drawing.Size(776, 20)
-        Me.coba.TabIndex = 24
-        '
-        'Button1
-        '
-        Me.Button1.AccessibleName = "Button1"
-        Me.Button1.Location = New System.Drawing.Point(615, 49)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(118, 36)
-        Me.Button1.TabIndex = 23
-        Me.Button1.Text = "test excel"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
-        'DataGridView1
-        '
-        Me.DataGridView1.AccessibleName = "DataGridView1"
-        Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView1.Location = New System.Drawing.Point(579, 102)
-        Me.DataGridView1.Name = "DataGridView1"
-        Me.DataGridView1.Size = New System.Drawing.Size(321, 150)
-        Me.DataGridView1.TabIndex = 22
         '
         'GroupBox5
         '
@@ -475,17 +418,14 @@ Partial Class Form1
         Me.lblHitungDataConvert.TabIndex = 0
         Me.lblHitungDataConvert.Text = "lblHitungDataConvert"
         '
+        'Timer1
+        '
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(800, 450)
-        Me.Controls.Add(Me.TextBox1)
-        Me.Controls.Add(Me.zip)
-        Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.coba)
-        Me.Controls.Add(Me.Button1)
-        Me.Controls.Add(Me.DataGridView1)
+        Me.ClientSize = New System.Drawing.Size(550, 392)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -493,7 +433,6 @@ Partial Class Form1
         Me.Controls.Add(Me.GroupBox1)
         Me.Name = "Form1"
         Me.Text = "SAPM"
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
@@ -504,16 +443,8 @@ Partial Class Form1
         Me.GroupBox1.ResumeLayout(False)
         Me.GroupBox1.PerformLayout()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
-
-    Friend WithEvents TextBox1 As TextBox
-    Friend WithEvents zip As Button
-    Friend WithEvents Label1 As Label
-    Friend WithEvents coba As TextBox
-    Friend WithEvents Button1 As Button
-    Friend WithEvents DataGridView1 As DataGridView
     Friend WithEvents GroupBox5 As GroupBox
     Friend WithEvents lblWaktuSelesai As Label
     Friend WithEvents lblWaktuSelesaiConvert As Label
@@ -548,4 +479,6 @@ Partial Class Form1
     Friend WithEvents cmdProses As Button
     Friend WithEvents GroupBox1 As GroupBox
     Friend WithEvents lblHitungDataConvert As Label
+    Friend WithEvents Timer1 As Timer
+    Friend WithEvents BackgroundWorker1 As System.ComponentModel.BackgroundWorker
 End Class
