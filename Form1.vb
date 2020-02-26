@@ -8,6 +8,7 @@ Imports System.Messaging
 
 Public Class Form1
 
+
     Function GetAppKey(ByVal myKey As String) As String
         Try
             Dim appSettings = ConfigurationManager.AppSettings
@@ -72,7 +73,7 @@ Public Class Form1
                 lblWaktuMulai.Text = Now
                 lblWaktuMulaiConvert.Text = Now
                 headerdat()
-                Export_Only_Wilayah_UpdateDita()
+                createDirWilayah()
                 total()
                 lblWaktuSelesaiConvert.Text = Now
                 lblWaktuSelesai.Text = Now
@@ -84,14 +85,12 @@ Public Class Form1
         Dispose()
     End Sub
 
-    Public Sub Export_Only_Wilayah_UpdateDita()
+
+    Public Sub createDirWilayah()
         'Set up connection string
         Me.Cursor = Cursors.WaitCursor
         Dim wilayah As String
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
-        Dim strConn As String = ""
-        Dim strConnAttr As String = ""
-        Dim strConnVal As String = ""
         Dim connectionString As String = GetAppKey("CONN_STR")
         Dim query As String = GetAppKey("QUERY")
         'Dim query2 As String = GetAppKey("QUERY", "Where Region_Kelolaan = '" & mystr & "'")
@@ -147,9 +146,7 @@ Public Class Form1
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
                 End If
 
-                Export_Only_Cabang(wilayah)
-
-
+                createDirCabang(wilayah)
             End While
 
             reader.Close()
@@ -260,7 +257,7 @@ Public Class Form1
             GC.Collect()
         End Try
     End Sub
-    Public Sub Export_Only_Cabang(ByRef wilayah As String)
+    Public Sub createDirCabang(ByRef wilayah As String)
         Dim cabang As String
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
