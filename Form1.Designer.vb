@@ -267,23 +267,23 @@ Partial Class Form1
         '
         'cmbTahun
         '
-        Me.cmbTahun.AccessibleName = "cmbTahun"
+        Me.cmbTahun.AccessibleName = "Tahun"
         Me.cmbTahun.FormattingEnabled = True
         Me.cmbTahun.Location = New System.Drawing.Point(384, 73)
         Me.cmbTahun.Name = "cmbTahun"
         Me.cmbTahun.Size = New System.Drawing.Size(101, 21)
         Me.cmbTahun.TabIndex = 2
-        Me.cmbTahun.Text = "cmbTahun"
+        Me.cmbTahun.Text = "Tahun"
         '
         'cmbBulan
         '
-        Me.cmbBulan.AccessibleName = "cmbBulan"
+        Me.cmbBulan.AccessibleName = "Bulan"
         Me.cmbBulan.FormattingEnabled = True
         Me.cmbBulan.Location = New System.Drawing.Point(298, 73)
         Me.cmbBulan.Name = "cmbBulan"
         Me.cmbBulan.Size = New System.Drawing.Size(80, 21)
         Me.cmbBulan.TabIndex = 1
-        Me.cmbBulan.Text = "cmbBulan"
+        Me.cmbBulan.Text = "Bulan"
         '
         'txtNamaTabel
         '
