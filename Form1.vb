@@ -5,14 +5,9 @@ Imports Microsoft.Office.Interop
 Imports Teradata.Client.Provider
 Imports SAPMHandover_DEV2.Module1
 Imports System.Messaging
+Imports System.Net
 
 Public Class Form1
-
-    Private hitungConvertWil As Double
-    Private hitungConvertCab As Double
-
-
-
     Function GetAppKey(ByVal myKey As String) As String
         Try
             Dim appSettings = ConfigurationManager.AppSettings
@@ -88,7 +83,6 @@ Public Class Form1
                 total()
                 lblWaktuSelesaiConvert.Text = Now
                 lblWaktuSelesai.Text = Now
-                lblHitungDataConvert.Text = hitungConvertCab + hitungConvertWil
                 MsgBox("Selesai")
             End If
         End If
@@ -107,7 +101,7 @@ Public Class Form1
 
         Dim args_query(1) As String
         args_query(0) = txtNamaTabel.Text
-        Dim query As String = QueryBuilder(args_query, (GetAppKey("QUERY")))
+        Dim query As String = QueryBuilder(args_query, (GetAppKey("QUERYWILAYAH")))
         Dim conn As TdConnection
         Try
             conn = New TdConnection(connectionString)
@@ -124,7 +118,7 @@ Public Class Form1
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
 
-            hitungConvertWil = 0
+
             While reader.Read()
                 wilayah = ""
                 For i = 0 To reader.FieldCount - 1
@@ -148,17 +142,25 @@ Public Class Form1
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel", vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
+                    'Dim dirWil1 As String = txtLokasiFolderKB.Text
+                    'Dim dirFtpWil1 = dirWil1.Remove(0, 8) & "FileExcel"
+                    'createDirFtp(dirFtpWil1)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)))
+                    'Dim dirWil2 As String = txtLokasiFolderKB.Text
+                    'Dim dirFtpWil2 = dirWil2.Remove(0, 8) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
+                    'createDirFtp(dirFtpWil2)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
+                    'Dim dirWil3 As String = txtLokasiFolderKB.Text
+                    'Dim dirFtpWil3 = dirWil3.Remove(0, 8) & "6" & String.Format("{0:00}", CInt(wilayah))
+                    'createDirFtp(dirFtpWil3)
                 End If
 
                 createDirCabang(wilayah)
 
-                hitungConvertWil = hitungConvertWil + 1
             End While
 
             reader.Close()
@@ -236,25 +238,30 @@ Public Class Form1
                     End If
                     xlWorkSheet.Cells(row + 1, i + 1) = read.GetValue(i).ToString
                 Next
-
+                Console.WriteLine("data cabang :" & row)
                 row = row + 1
             End While
 
             Dim dirXl As String = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
             Dim namaFileXl As String = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".xlsx"
 
-            If Dir((Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\" & namaFileXl), vbDirectory) = "" Then
-                xlWorkSheet.Cells.EntireColumn.AutoFit()
-                xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
-                xlWorkBook.Close()
-                xlApp.Quit()
-            Else
-                My.Computer.FileSystem.DeleteFile(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\" & namaFileXl)
-                xlWorkSheet.Cells.EntireColumn.AutoFit()
-                xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
-                xlWorkBook.Close()
-                xlApp.Quit()
-            End If
+            xlWorkSheet.Cells.EntireColumn.AutoFit()
+            xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
+            xlWorkBook.Close()
+            xlApp.Quit()
+
+            'If Dir((Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\" & namaFileXl), vbDirectory) = "" Then
+            '    xlWorkSheet.Cells.EntireColumn.AutoFit()
+            '    xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
+            '    xlWorkBook.Close()
+            '    xlApp.Quit()
+            'Else
+            '    My.Computer.FileSystem.DeleteFile(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\" & namaFileXl)
+            '    xlWorkSheet.Cells.EntireColumn.AutoFit()
+            '    xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
+            '    xlWorkBook.Close()
+            '    xlApp.Quit()
+            'End If
 
             releaseObject(xlApp)
             releaseObject(xlWorkBook)
@@ -268,14 +275,161 @@ Public Class Form1
             sPassword = "Pwd" & wilayah & cabang & cmbTahun.Text & (Trim(bulan))
             Dim lokasiWinrar As String = txtLokasiFileWinrar.Text
 
-            If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"), vbDirectory) = "" Then
-                gpCompressFileToZip(lokasiWinrar, dirXl & "\" & namaFileXl, sPassword, sNamaFileZip)
-            Else
-                My.Computer.FileSystem.DeleteFile(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip")
-                gpCompressFileToZip(lokasiWinrar, dirXl & "\" & namaFileXl, sPassword, sNamaFileZip)
-            End If
+            gpCompressFileToZip(lokasiWinrar, dirXl & "\" & namaFileXl, sPassword, sNamaFileZip)
+
+            'If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"), vbDirectory) = "" Then
+            '    gpCompressFileToZip(lokasiWinrar, dirXl & "\" & namaFileXl, sPassword, sNamaFileZip)
+            'Else
+            '    My.Computer.FileSystem.DeleteFile(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip")
+            '    gpCompressFileToZip(lokasiWinrar, dirXl & "\" & namaFileXl, sPassword, sNamaFileZip)
+            'End If
 
             Dim sNamaFileZip2 As String
+            sNamaFileZip2 = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
+            CreateBNISegmentasiDAT(wilayah, cabang, sNamaFileZip2, sPassword)
+        Catch ex As TdException
+            Console.WriteLine(myText & "Error:  " & ex.ToString & vbCrLf)
+        End Try
+    End Sub
+
+    Public Sub createExcel2(ByRef wilayah As String, ByRef cabang As String, ByRef mystr3 As String)
+        Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
+        Dim strConn As String = ""
+        Dim strConnAttr As String = ""
+        Dim strConnVal As String = ""
+        Dim connectionString As String = GetAppKey("CONN_STR")
+        Dim conn As TdConnection
+        Dim query As String
+
+        Dim bulan As String
+        bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
+        Dim periode As String
+        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+
+        Dim args_query(4) As String
+        args_query(0) = periode
+        args_query(1) = wilayah
+        args_query(2) = cabang
+        args_query(3) = txtNamaTabel.Text
+        query = QueryBuilder(args_query, (GetAppKey("QUERY_EXCEL")))
+
+        Dim sNmaFileTxt2 As String
+        sNmaFileTxt2 = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".txt"
+
+        Try
+            conn = New TdConnection(connectionString)
+            conn.Open()
+            Console.WriteLine(myText & "Connection opened, Process Dataset" & vbCrLf)
+            'Console.WriteLine(myQuery)
+
+            Dim xlWorkSheet As Excel.Worksheet
+            Dim xlApp As Excel.Application
+            Dim xlWorkBook As Excel.Workbook
+            Dim misValue As Object = System.Reflection.Missing.Value
+
+            xlApp = New Excel.Application
+            xlWorkBook = xlApp.Workbooks.Add(misValue)
+            xlWorkSheet = xlWorkBook.Sheets("sheet1")
+
+            Dim tout As Integer = CInt(GetAppKey("TIMEOUT"))
+            Dim cmd = New TdCommand(query, conn)
+            cmd.CommandTimeout = tout
+            Dim read As TdDataReader = cmd.ExecuteReader
+            Dim i As Integer
+            Dim strDlm As String = GetAppKey("DELIMITER")
+            Dim mystr As String = ""
+            Dim mystrHeader As String = ""
+            Dim iHeader As Integer = 0
+            Dim row As Integer = 2
+            'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
+            'Using sw As StreamWriter = New StreamWriter(MyFileName)
+
+            Dim dataMasihAdaSisa As Boolean
+            Dim a As Integer = 0
+            Dim fileNumber As Integer = 1
+            Dim lokasiWinrar As String
+            Dim sPassword As String
+            Dim filePathZip As String
+            Dim sNamaPathFileZip As String
+            Dim fileNumberZip As Integer = 1
+            Dim sFileZip As String
+            Dim sNamaFileZip2 As String
+
+            While read.Read()
+
+                mystr = ""
+                'reader.FieldCount
+                For i = 0 To read.FieldCount - 1
+                    'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
+                    If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
+                        If i < read.FieldCount - 1 Then
+                            xlWorkSheet.Cells(1, i + 1) = read.GetName(i).ToString
+                        End If
+                    End If
+                    xlWorkSheet.Cells(row, i + 1) = read.GetValue(i).ToString
+                Next
+                If row Mod 1000000 = 0 Then
+                    Dim dirXl As String = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                    Dim namaFileXl As String = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".xlsx"
+                    Dim filePath As String = dirXl & "\" & namaFileXl
+                    xlWorkSheet.Cells.EntireColumn.AutoFit()
+                    xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
+                    xlWorkBook.Close()
+                    xlApp.Quit()
+                    releaseObject(xlApp)
+                    releaseObject(xlWorkBook)
+                    releaseObject(xlWorkSheet)
+
+                    lokasiWinrar = txtLokasiFileWinrar.Text
+                    sPassword = "Pwd" & wilayah & cabang & cmbTahun.Text & (Trim(bulan))
+                    sNamaPathFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                    sFileZip = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
+                    filePathZip = sNamaPathFileZip & "\" & sFileZip
+                    gpCompressFileToZip(lokasiWinrar, filePath, sPassword, filePathZip)
+
+                    sNamaFileZip2 = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
+
+                    CreateBNISegmentasiDAT(wilayah, " ", sNamaFileZip2, sPassword)
+
+                    fileNumber += 1
+                    fileNumberZip += 1
+                    xlApp = New Excel.Application
+                    'xlApp = New Excel.ApplicationClass
+                    xlWorkBook = xlApp.Workbooks.Add(misValue)
+                    xlWorkSheet = xlWorkBook.Sheets("sheet1")
+
+                    row = 1
+                End If
+                fileNumberZip = fileNumberZip
+                fileNumber = fileNumber
+                row = row + 1
+            End While
+
+            Dim dirXl2 As String = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+            Dim namaFileXl2 As String = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".xlsx"
+            Dim filePath2 As String = dirXl2 & "\" & namaFileXl2
+            xlWorkSheet.Cells.EntireColumn.AutoFit()
+            xlWorkSheet.SaveAs(dirXl2 & "\" & namaFileXl2)
+            xlWorkBook.Close()
+            xlApp.Quit()
+            releaseObject(xlApp)
+            releaseObject(xlWorkBook)
+            releaseObject(xlWorkSheet)
+
+            read.Close()
+            conn.Close()
+
+            sNamaPathFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+            sFileZip = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
+            sPassword = "Pwd" & wilayah & cabang & cmbTahun.Text & (Trim(bulan))
+            lokasiWinrar = txtLokasiFileWinrar.Text
+            filePathZip = sNamaPathFileZip & "\" & sFileZip
+
+            If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)) & "\Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"), vbDirectory) = "" Then
+                gpCompressFileToZip(lokasiWinrar, filePath2, sPassword, filePathZip)
+            End If
+
+
             sNamaFileZip2 = "Cabang_" & wilayah & "_" & cabang & "_" & Trim(mystr3) & "_" & cmbTahun.Text & Trim(bulan) & ".zip"
             CreateBNISegmentasiDAT(wilayah, cabang, sNamaFileZip2, sPassword)
         Catch ex As TdException
@@ -301,7 +455,7 @@ Public Class Form1
         Dim args_query(2) As String
         args_query(0) = wilayah
         args_query(1) = txtNamaTabel.Text
-        query = QueryBuilder(args_query, (GetAppKey("QUERY2")))
+        query = QueryBuilder(args_query, (GetAppKey("QUERYCABANG")))
         Dim conn As TdConnection
 
         Try
@@ -319,7 +473,6 @@ Public Class Form1
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
 
-            hitungConvertCab = 0
             While reader.Read()
                 cabang = ""
                 For i = 0 To reader.FieldCount - 1
@@ -344,14 +497,21 @@ Public Class Form1
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
+
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
                 End If
 
-                'namaCabangKelolaan(wilayah, cabang)
+                Dim dirCab2 As String = txtLokasiFolderKB.Text
+                Dim dirFtpCab2 = dirCab2.Remove(0, 8) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                createDirFtp(dirFtpCab2)
 
-                hitungConvertCab = hitungConvertCab + 1
+                Dim dirCab1 As String = txtLokasiFolderKB.Text
+                Dim dirFtpCab1 = dirCab1.Remove(0, 8) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                createDirFtp(dirFtpCab1)
+
+                namaCabangKelolaan(wilayah, cabang)
             End While
 
             createExcelWilayah2(wilayah)
@@ -389,9 +549,6 @@ Public Class Form1
         Dim sNamaFileZip As String
         'Set up connection string
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
-        Dim strConn As String = ""
-        Dim strConnAttr As String = ""
-        Dim strConnVal As String = ""
         Dim connectionString As String = GetAppKey("CONN_STR")
         Dim conn As TdConnection
         Dim query As String
@@ -400,7 +557,7 @@ Public Class Form1
         args_query(0) = wilayah
         args_query(1) = cabang
         args_query(2) = txtNamaTabel.Text
-        query = QueryBuilder(args_query, (GetAppKey("QUERY3")))
+        query = QueryBuilder(args_query, (GetAppKey("QUERYNAMACABANG")))
 
         Try
 
@@ -415,13 +572,13 @@ Public Class Form1
             Dim reader As TdDataReader = command.ExecuteReader
             Dim i As Integer
             Dim strDlm As String = GetAppKey("DELIMITER")
-            Dim mystr3 As String = ""
+            Dim nmCbg As String = ""
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
             'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
 
             While reader.Read()
-                mystr3 = ""
+                nmCbg = ""
                 'reader.FieldCount
                 For i = 0 To reader.FieldCount - 1
                     'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
@@ -434,14 +591,14 @@ Public Class Form1
                         'ts.WriteLine(mystrHeader)
                     End If
                     If i < reader.FieldCount - 1 Then
-                        mystr3 = mystr3 & reader.GetValue(i) & strDlm
+                        nmCbg = nmCbg & reader.GetValue(i) & strDlm
                     Else
-                        mystr3 = mystr3 & reader.GetValue(i)
+                        nmCbg = nmCbg & reader.GetValue(i)
                     End If
                 Next
 
-                mystr3 = Replace(mystr3, " ", "")
-                createExcel(wilayah, cabang, mystr3)
+                nmCbg = Replace(nmCbg, " ", "")
+                createExcel(wilayah, cabang, nmCbg)
             End While
             reader.Close()
             conn.Close()
@@ -619,6 +776,8 @@ Public Class Form1
             Dim xlWorkBook As Excel.Workbook
             Dim misValue As Object = System.Reflection.Missing.Value
 
+
+
             Dim tout As Integer = CInt(GetAppKey("TIMEOUT"))
             Dim cmd = New TdCommand(query, conn)
             cmd.CommandTimeout = tout
@@ -628,24 +787,27 @@ Public Class Form1
             Dim mystr As String = ""
             Dim mystrHeader As String = ""
             Dim iHeader As Integer = 0
-            Dim row As Integer = 0
-            Dim fileNumber As Integer = 1
-            Dim startxl As Boolean = False
-            Dim jumlah As Integer
+            Dim row As Integer = 2
             'Console.WriteLine("Create Textfile: " & MyFileName & vbCrLf)
 
-            Const lMAX_ROWS_PER_SHEET = 4
+            xlApp = New Excel.Application
+            'xlApp = New Excel.ApplicationClass
+            xlWorkBook = xlApp.Workbooks.Add(misValue)
+            xlWorkSheet = xlWorkBook.Sheets("sheet1")
 
+            Dim dataMasihAdaSisa As Boolean
             Dim a As Integer = 0
-            Dim b As Integer = 0
-            Dim c As Integer = 0
+            Dim fileNumber As Integer = 1
+            Dim lokasiWinrar As String
+            Dim sPassword As String
+            Dim filePathZip As String
+            Dim sNamaPathFileZip As String
+            Dim fileNumberZip As Integer = 1
+            Dim sFileZip As String
+            Dim sNamaFileZip2 As String
 
             While read.Read()
-                xlApp = New Excel.Application
-                'xlApp = New Excel.ApplicationClass
-                xlWorkBook = xlApp.Workbooks.Add(misValue)
-                xlWorkSheet = xlWorkBook.Sheets("sheet1")
-                startxl = True
+                dataMasihAdaSisa = True
                 mystr = ""
                 'reader.FieldCount
                 For i = 0 To read.FieldCount - 1
@@ -655,76 +817,76 @@ Public Class Form1
                             xlWorkSheet.Cells(1, i + 1) = read.GetName(i).ToString
                         End If
                     End If
-                    xlWorkSheet.Cells(row + 1, i + 1) = read.GetValue(i).ToString
+                    xlWorkSheet.Cells(row, i + 1) = read.GetValue(i).ToString
                 Next
-
-                row = row + 1
-                If row = 3 Then
+                If row Mod 1000000 = 0 Then
                     Dim dirXl As String = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
                     Dim namaFileXl As String = "Wilayah_" & wilayah & "_" & fileNumber & ".xlsx"
                     Dim filePath As String = dirXl & "\" & namaFileXl
                     xlWorkSheet.Cells.EntireColumn.AutoFit()
-                    xlWorkBook.SaveAs(dirXl & "\" & namaFileXl)
+                    xlWorkSheet.SaveAs(dirXl & "\" & namaFileXl)
                     xlWorkBook.Close()
                     xlApp.Quit()
-                    fileNumber = fileNumber + 1
-                    row = 0
-                    startxl = False
+                    Console.WriteLine("berhasil dibuat excel1")
+                    releaseObject(xlApp)
+                    releaseObject(xlWorkBook)
+                    releaseObject(xlWorkSheet)
+
+                    lokasiWinrar = txtLokasiFileWinrar.Text
+                    sPassword = "Pwd" & wilayah & cmbTahun.Text & (Trim(bulan))
+                    sNamaPathFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah))
+                    sFileZip = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
+                    filePathZip = sNamaPathFileZip & "\" & sFileZip
+                    gpCompressFileToZip(lokasiWinrar, filePath, sPassword, filePathZip)
+
+                    sNamaFileZip2 = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
+
+                    CreateBNISegmentasiDAT(wilayah, " ", sNamaFileZip2, sPassword)
+
+                    fileNumber += 1
+                    fileNumberZip += 1
+                    xlApp = New Excel.Application
+                    'xlApp = New Excel.ApplicationClass
+                    xlWorkBook = xlApp.Workbooks.Add(misValue)
+                    xlWorkSheet = xlWorkBook.Sheets("sheet1")
+
+                    row = 1
                 End If
-
-                For c = 1 To 5000
-                    Application.DoEvents()
-                Next c
-                'Dim fileNumberZip = 1
-                'Dim sNamaPathFileZip As String
-                'sNamaPathFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah))
-                'Dim sFileZip As String = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
-                'Dim sPassword As String
-                'sPassword = "Pwd" & wilayah & cmbTahun.Text & (Trim(bulan))
-                'Dim lokasiWinrar As String = txtLokasiFileWinrar.Text
-                'Dim filePathZip As String = sNamaPathFileZip & "\" & sFileZip
-                'If File.Exists(filePathZip) Then
-                '    Do
-                '        fileNumberZip += 1
-                '        sFileZip = "Wilayah_" & wilayah & "_" & fileNumberZip & ".xlsx"
-                '        filePathZip = sNamaPathFileZip & "\" & sFileZip
-                '        Console.WriteLine(filePathZip)
-                '    Loop While File.Exists(filePathZip)
-                'End If
-
-                'If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & ".zip"), vbDirectory) = "" Then
-                '    gpCompressFileToZip(lokasiWinrar, filePath, sPassword, filePathZip)
-                'End If
-
-                'Dim sNamaFileZip2 As String
-                'sNamaFileZip2 = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
-
-                'CreateBNISegmentasiDAT(wilayah, "0", sNamaFileZip2, sPassword)
+                fileNumberZip = fileNumberZip
+                fileNumber = fileNumber
+                row = row + 1
             End While
-            If startxl = True Then
-                Dim dirXl2 = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
-                Dim namaFileXl2 As String = "Wilayah_" & wilayah & "_" & fileNumber & ".xlsx"
-                Dim filePath2 As String = dirXl2 & "\" & namaFileXl2
-                xlWorkSheet.Cells.EntireColumn.AutoFit()
-                xlWorkSheet.SaveAs(dirXl2 & "\" & namaFileXl2)
-                xlWorkBook.Close()
-                xlApp.Quit()
-            End If
-            'If File.Exists(filePath) Then
-            '    Do
-            '        fileNumber += 1
-            '        namaFileXl = "Wilayah_" & wilayah & "_" & fileNumber & ".xlsx"
-            '        filePath = dirXl & "\" & namaFileXl
-            '        Console.WriteLine(filePath)
-            '    Loop While File.Exists(filePath)
-            'End If
+            Console.WriteLine(row)
 
+            Dim dirXl2 As String = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
+            Dim namaFileXl2 As String = "Wilayah_" & wilayah & "_" & fileNumber & ".xlsx"
+            Dim filePath2 As String = dirXl2 & "\" & namaFileXl2
+            xlWorkSheet.Cells.EntireColumn.AutoFit()
+            xlWorkSheet.SaveAs(dirXl2 & "\" & namaFileXl2)
+            xlWorkBook.Close()
+            xlApp.Quit()
+            Console.WriteLine("berhasil dibuat excel2")
             releaseObject(xlApp)
             releaseObject(xlWorkBook)
             releaseObject(xlWorkSheet)
+
+
             read.Close()
             conn.Close()
 
+            sNamaPathFileZip = Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah))
+            sFileZip = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
+            sPassword = "Pwd" & wilayah & cmbTahun.Text & (Trim(bulan))
+            lokasiWinrar = txtLokasiFileWinrar.Text
+            filePathZip = sNamaPathFileZip & "\" & sFileZip
+
+            If Dir((Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & ".zip"), vbDirectory) = "" Then
+                gpCompressFileToZip(lokasiWinrar, filePath2, sPassword, filePathZip)
+            End If
+
+            sNamaFileZip2 = "Wilayah_" & wilayah & "_" & cmbTahun.Text & Trim(bulan) & "_" & fileNumberZip & ".zip"
+
+            CreateBNISegmentasiDAT(wilayah, " ", sNamaFileZip2, sPassword)
         Catch ex As TdException
             Console.WriteLine(myText & "Error:  " & ex.ToString & vbCrLf)
         End Try
@@ -856,4 +1018,25 @@ Public Class Form1
     Private Sub cmbTahun_KeyPress(sender As Object, e As KeyPressEventArgs) Handles cmbTahun.KeyPress
         e.Handled = True
     End Sub
+    Function createDirFtp(ByRef dir As String)
+        Dim ftpServer As String = GetAppKey("FTP")
+        Dim ftpUsername As String = GetAppKey("USERNAME")
+        Dim ftpPassword As String = GetAppKey("PASSWORD")
+        Dim filePath As String = txtLokasiFolderKB.Text
+
+        Console.WriteLine(dir)
+
+        'Create Request To Upload File'
+        Dim wrUpload As FtpWebRequest = DirectCast(WebRequest.Create(ftpServer & "\" & dir), FtpWebRequest)
+
+        'Specify Username & Password'
+        wrUpload.Credentials = New NetworkCredential(ftpUsername, ftpPassword)
+
+        'Start Upload Process'
+        wrUpload.Method = WebRequestMethods.Ftp.MakeDirectory
+
+        Dim ftpResp As FtpWebResponse = wrUpload.GetResponse
+
+
+    End Function
 End Class
