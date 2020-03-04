@@ -263,7 +263,7 @@ Partial Class Form1
         Me.txtLokasiFolderKB.Name = "txtLokasiFolderKB"
         Me.txtLokasiFolderKB.Size = New System.Drawing.Size(186, 20)
         Me.txtLokasiFolderKB.TabIndex = 3
-        Me.txtLokasiFolderKB.Text = "c:\SAPM\KB\"
+        Me.txtLokasiFolderKB.Text = "c:\dataSAPM\KBE\"
         '
         'cmbTahun
         '

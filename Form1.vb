@@ -7,6 +7,7 @@ Imports SAPMHandover_DEV2.Module1
 Imports System.Messaging
 Imports System.Net
 
+
 Public Class Form1
     Function GetAppKey(ByVal myKey As String) As String
         Try
@@ -81,6 +82,7 @@ Public Class Form1
                 headerdat()
                 createDirWilayah()
                 total()
+                searchFileXl()
                 lblWaktuSelesaiConvert.Text = Now
                 lblWaktuSelesai.Text = Now
                 MsgBox("Selesai")
@@ -142,22 +144,40 @@ Public Class Form1
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel", vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
-                    'Dim dirWil1 As String = txtLokasiFolderKB.Text
-                    'Dim dirFtpWil1 = dirWil1.Remove(0, 8) & "FileExcel"
-                    'createDirFtp(dirFtpWil1)
+                    Dim dirWil1 As String = txtLokasiFolderKB.Text
+                    Dim dirFtpWil1 = dirWil1.Remove(0, 12) & "FileExcel"
+                    createDirFtp(dirFtpWil1)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)))
-                    'Dim dirWil2 As String = txtLokasiFolderKB.Text
-                    'Dim dirFtpWil2 = dirWil2.Remove(0, 8) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
-                    'createDirFtp(dirFtpWil2)
+                    Dim dirWil2 As String = txtLokasiFolderKB.Text
+                    Dim dirFtpWil2 = dirWil2.Remove(0, 12) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
+                    createDirFtp(dirFtpWil2)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
-                    'Dim dirWil3 As String = txtLokasiFolderKB.Text
-                    'Dim dirFtpWil3 = dirWil3.Remove(0, 8) & "6" & String.Format("{0:00}", CInt(wilayah))
-                    'createDirFtp(dirFtpWil3)
+                    Dim dirwil3 As String = txtLokasiFolderKB.Text
+                    Dim dirftpwil3 = dirwil3.Remove(0, 12) & "6" & String.Format("{0:00}", CInt(wilayah))
+                    createDirFtp(dirftpwil3)
                 End If
+
+                'MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
+                'Dim dirWil1 As String = txtLokasiFolderKB.Text
+                'Dim dirFtpWil1 = dirWil1.Remove(0, 12) & "FileExcel"
+                'createDirFtp(dirFtpWil1)
+                'Console.WriteLine("berhasil" & dirFtpWil1)
+
+                'MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)))
+                'Dim dirWil2 As String = txtLokasiFolderKB.Text
+                'Dim dirFtpWil2 = dirWil2.Remove(0, 12) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
+                'createDirFtp(dirFtpWil2)
+                'Console.WriteLine("berhasil" & dirFtpWil2)
+
+                'MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
+                'Dim dirwil3 As String = txtLokasiFolderKB.Text
+                'Dim dirftpwil3 = dirwil3.Remove(0, 12) & "6" & String.Format("{0:00}", CInt(wilayah))
+                'createDirFtp(dirftpwil3)
+                'Console.WriteLine("berhasil" & dirftpwil3)
 
                 createDirCabang(wilayah)
 
@@ -497,24 +517,22 @@ Public Class Form1
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
-
+                    Dim dirCab1 As String = txtLokasiFolderKB.Text
+                    Dim dirFtpCab1 = dirCab1.Remove(0, 12) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                    createDirFtp(dirFtpCab1)
+                    Console.WriteLine("berhasil" & dirFtpCab1)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang)))
+                    Dim dirCab2 As String = txtLokasiFolderKB.Text
+                    Dim dirFtpCab2 = dirCab2.Remove(0, 12) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
+                    createDirFtp(dirFtpCab2)
+                    Console.WriteLine("berhasil" & dirFtpCab2)
                 End If
-
-                Dim dirCab2 As String = txtLokasiFolderKB.Text
-                Dim dirFtpCab2 = dirCab2.Remove(0, 8) & "6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
-                createDirFtp(dirFtpCab2)
-
-                Dim dirCab1 As String = txtLokasiFolderKB.Text
-                Dim dirFtpCab1 = dirCab1.Remove(0, 8) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)) & "\" & String.Format("{0:000}", CInt(cabang))
-                createDirFtp(dirFtpCab1)
-
                 namaCabangKelolaan(wilayah, cabang)
             End While
 
-            createExcelWilayah2(wilayah)
+            createExcelWilayah(wilayah)
 
             reader.Close()
             conn.Close()
@@ -745,7 +763,7 @@ Public Class Form1
         lblWaktuMulai.Text = Now
     End Sub
 
-    Private Sub createExcelWilayah2(ByRef wilayah As String)
+    Private Sub createExcelWilayah(ByRef wilayah As String)
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
         Dim strConnAttr As String = ""
@@ -892,7 +910,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub createExcelWilayah(ByRef wilayah As String)
+    Private Sub createExcelWilayahOld(ByRef wilayah As String)
         Dim myText As String = "Connecting to database using teradata" & vbCrLf & vbCrLf
         Dim strConn As String = ""
         Dim strConnAttr As String = ""
@@ -1023,19 +1041,104 @@ Public Class Form1
         Dim ftpUsername As String = GetAppKey("USERNAME")
         Dim ftpPassword As String = GetAppKey("PASSWORD")
         Dim filePath As String = txtLokasiFolderKB.Text
+        Dim mytext As String = ""
 
         Console.WriteLine(dir)
 
-        'Create Request To Upload File'
-        Dim wrUpload As FtpWebRequest = DirectCast(WebRequest.Create(ftpServer & "\" & dir), FtpWebRequest)
+        Dim wrMakeDir As FtpWebRequest = DirectCast(WebRequest.Create(ftpServer & dir), FtpWebRequest)
+
+        'Specify Username & Password'
+        wrMakeDir.Credentials = New NetworkCredential(ftpUsername, ftpPassword)
+
+        ''Start Upload Process'
+        'wrMakeDir.Method = WebRequestMethods.Ftp.MakeDirectory
+
+        ''Locate File And Store It In Byte Array'
+        'Dim ftpResp As FtpWebResponse = wrMakeDir.GetResponse()
+
+        wrMakeDir.UsePassive = True
+        wrMakeDir.UseBinary = True
+        wrMakeDir.KeepAlive = False
+        Console.WriteLine("Getting the response")
+
+        wrMakeDir.Method = WebRequestMethods.Ftp.MakeDirectory
+
+        Using ftpResp As FtpWebResponse = wrMakeDir.GetResponse()
+            Console.WriteLine(ftpResp.StatusCode)
+        End Using
+
+
+
+    End Function
+
+    Function searchFileXl()
+        Dim directory = txtLokasiFolderKB.Text
+        Dim ftpServer As String = GetAppKey("FTP")
+        Dim ftpUsername As String = GetAppKey("USERNAME")
+        Dim ftpPassword As String = GetAppKey("PASSWORD")
+        Dim sTemp As String = Nothing
+        Dim filePath As String = txtLokasiFolderKB.Text
+
+        For Each filename As String In IO.Directory.GetFiles(Directory, "*.xlsx", IO.SearchOption.AllDirectories)
+
+            Console.WriteLine()
+            sendFileFtp(filename)
+            'My.Computer.Network.UploadFile(filename, ftpServer & sTemp, ftpUsername, ftpPassword)
+        Next
+
+        For Each filename As String In IO.Directory.GetFiles(directory, "*.zip", IO.SearchOption.AllDirectories)
+
+            Console.WriteLine(filename)
+            sendFileFtp(filename)
+
+        Next
+
+        For Each filename As String In IO.Directory.GetFiles(directory, "*.dat", IO.SearchOption.AllDirectories)
+
+            Console.WriteLine(filename)
+            sendFileFtp(filename)
+
+        Next
+
+
+    End Function
+
+    Function sendFileFtp(ByRef Files As String)
+        Dim ftpServer As String = GetAppKey("FTP")
+        Dim ftpUsername As String = GetAppKey("USERNAME")
+        Dim ftpPassword As String = GetAppKey("PASSWORD")
+        Dim filePath As String = txtLokasiFolderKB.Text
+
+        filePath = filePath.Remove(0, 12)
+        Dim destinationFile = Files.Replace(txtLokasiFolderKB.Text, "")
+        Dim sendFile = filePath & destinationFile
+
+        Console.WriteLine(sendFile)
+
+        Dim wrUpload As FtpWebRequest = DirectCast(WebRequest.Create(ftpServer & sendFile), FtpWebRequest)
 
         'Specify Username & Password'
         wrUpload.Credentials = New NetworkCredential(ftpUsername, ftpPassword)
 
         'Start Upload Process'
-        wrUpload.Method = WebRequestMethods.Ftp.MakeDirectory
+        wrUpload.Method = WebRequestMethods.Ftp.UploadFile
 
-        Dim ftpResp As FtpWebResponse = wrUpload.GetResponse
+        'Locate File And Store It In Byte Array'
+        Dim btfile() As Byte = System.IO.File.ReadAllBytes(Files)
+
+        'Get File'
+        Dim strFile As Stream = wrUpload.GetRequestStream()
+
+        'Upload Each Byte'
+        strFile.Write(btfile, 0, btfile.Length)
+
+        'Close'
+        strFile.Close()
+
+        'Free Memory'
+        strFile.Dispose()
+
+
 
 
     End Function
