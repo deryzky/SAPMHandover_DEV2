@@ -1,4 +1,6 @@
-﻿Module Module1
+﻿Imports Teradata.Client.Provider
+
+Module Module1
     Public Function Convert_Date_Str2Int(Date_Str As String) As String
 
         Select Case Date_Str
@@ -33,4 +35,5 @@
     Public Sub gpCompressFileToZip(ByRef sLokasiWinrar As String, ByRef sNamaFileAsli As String, ByRef sPassword As String, ByRef sNamaFileZip As String)
         Shell(sLokasiWinrar & " a -p" & sPassword & " " & sNamaFileZip & " " & sNamaFileAsli)
     End Sub
+
 End Module
