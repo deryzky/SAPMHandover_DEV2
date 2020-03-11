@@ -144,21 +144,21 @@ Public Class Form1
 
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel", vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
-                    Dim dirWil1 As String = txtLokasiFolderKB.Text
-                    Dim dirFtpWil1 = dirWil1.Remove(0, 12) & "FileExcel"
-                    createDirFtp(dirFtpWil1)
+                    'Dim dirWil1 As String = txtLokasiFolderKB.Text
+                    'Dim dirFtpWil1 = dirWil1.Remove(0, 12) & "FileExcel"
+                    'createDirFtp(dirFtpWil1)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah)))
-                    Dim dirWil2 As String = txtLokasiFolderKB.Text
-                    Dim dirFtpWil2 = dirWil2.Remove(0, 12) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
-                    createDirFtp(dirFtpWil2)
+                    'Dim dirWil2 As String = txtLokasiFolderKB.Text
+                    'Dim dirFtpWil2 = dirWil2.Remove(0, 12) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
+                    'createDirFtp(dirFtpWil2)
                 End If
                 If Dir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)), vbDirectory) = "" Then
                     MkDir(Trim(txtLokasiFolderKB.Text) & "6" & String.Format("{0:00}", CInt(wilayah)))
-                    Dim dirwil3 As String = txtLokasiFolderKB.Text
-                    Dim dirftpwil3 = dirwil3.Remove(0, 12) & "6" & String.Format("{0:00}", CInt(wilayah))
-                    createDirFtp(dirftpwil3)
+                    'Dim dirwil3 As String = txtLokasiFolderKB.Text
+                    'Dim dirftpwil3 = dirwil3.Remove(0, 12) & "6" & String.Format("{0:00}", CInt(wilayah))
+                    'createDirFtp(dirftpwil3)
                 End If
 
                 'MkDir(Trim(txtLokasiFolderKB.Text) & "FileExcel")
@@ -203,8 +203,13 @@ Public Class Form1
 
         Dim bulan As String
         bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
-        Dim periode As String
-        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+        Dim blnThn As String
+        blnThn = cmbTahun.Text & "-" & bulan
+        Dim parseDate = DateTime.Parse(blnThn)
+        Dim DaysInMonth As Integer = Date.DaysInMonth(parseDate.Year, parseDate.Month)
+        Dim LastDayInMonthDate As Date = New Date(parseDate.Year, parseDate.Month, DaysInMonth)
+        Dim format As String = "yyyy-MM-dd"
+        Dim periode = LastDayInMonthDate.ToString(format)
 
         Dim args_query(4) As String
         args_query(0) = periode
@@ -322,8 +327,13 @@ Public Class Form1
 
         Dim bulan As String
         bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
-        Dim periode As String
-        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+        Dim blnThn As String
+        blnThn = cmbTahun.Text & "-" & bulan
+        Dim parseDate = DateTime.Parse(blnThn)
+        Dim DaysInMonth As Integer = Date.DaysInMonth(parseDate.Year, parseDate.Month)
+        Dim LastDayInMonthDate As Date = New Date(parseDate.Year, parseDate.Month, DaysInMonth)
+        Dim format As String = "yyyy-MM-dd"
+        Dim periode = LastDayInMonthDate.ToString(format)
 
         Dim args_query(4) As String
         args_query(0) = periode
@@ -528,7 +538,7 @@ Public Class Form1
                     'createDirFtp(dirFtpCab2)
                     'Console.WriteLine("berhasil" & dirFtpCab2)
                 End If
-                'namaCabangKelolaan(wilayah, cabang)
+                namaCabangKelolaan(wilayah, cabang)
             End While
 
             createExcelWilayah(wilayah)
@@ -671,8 +681,13 @@ Public Class Form1
 
         Dim bulan As String
         bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
-        Dim periode As String
-        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+        Dim blnThn As String
+        blnThn = cmbTahun.Text & "-" & bulan
+        Dim parseDate = DateTime.Parse(blnThn)
+        Dim DaysInMonth As Integer = Date.DaysInMonth(parseDate.Year, parseDate.Month)
+        Dim LastDayInMonthDate As Date = New Date(parseDate.Year, parseDate.Month, DaysInMonth)
+        Dim format As String = "yyyy-MM-dd"
+        Dim periode = LastDayInMonthDate.ToString(format)
 
         Dim args_queryWil(2) As String
         args_queryWil(0) = periode
@@ -771,8 +786,13 @@ Public Class Form1
 
         Dim bulan As String
         bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
-        Dim periode As String
-        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+        Dim blnThn As String
+        blnThn = cmbTahun.Text & "-" & bulan
+        Dim parseDate = DateTime.Parse(blnThn)
+        Dim DaysInMonth As Integer = Date.DaysInMonth(parseDate.Year, parseDate.Month)
+        Dim LastDayInMonthDate As Date = New Date(parseDate.Year, parseDate.Month, DaysInMonth)
+        Dim format As String = "yyyy-MM-dd"
+        Dim periode = LastDayInMonthDate.ToString(format)
 
         Dim args_query(3) As String
         args_query(0) = periode
@@ -827,17 +847,17 @@ Public Class Form1
             While read.Read()
 
                 dataMasihAdaSisa = True
-                    mystr = ""
-                    'reader.FieldCount
-                    For i = 0 To read.FieldCount - 1
-                        'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
-                        If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
-                            If i < read.FieldCount - 1 Then
-                                xlWorkSheet.Cells(1, i + 1) = read.GetName(i).ToString
-                            End If
+                mystr = ""
+                'reader.FieldCount
+                For i = 0 To read.FieldCount - 1
+                    'Console.WriteLine("{0} = {1}", reader.GetName(i), reader.GetValue(i))
+                    If GetAppKey("HEADER") = "Y" And iHeader = 0 Then
+                        If i < read.FieldCount - 1 Then
+                            xlWorkSheet.Cells(1, i + 1) = read.GetName(i).ToString
                         End If
-                        xlWorkSheet.Cells(row, i + 1) = read.GetValue(i).ToString
-                    Next
+                    End If
+                    xlWorkSheet.Cells(row, i + 1) = read.GetValue(i).ToString
+                Next
                 If row Mod 1000000 = 0 Then
                     dirXl = Trim(txtLokasiFolderKB.Text) & "FileExcel\6" & String.Format("{0:00}", CInt(wilayah))
                     namaFileXl = "Wilayah_" & wilayah & "_" & fileNumber & ".xlsx"
@@ -981,8 +1001,13 @@ Public Class Form1
 
         Dim bulan As String
         bulan = Convert_Date_Str2Int(Me.cmbBulan.Text)
-        Dim periode As String
-        periode = cmbTahun.Text & "-" & bulan & "-" & "31"
+        Dim blnThn As String
+        blnThn = cmbTahun.Text & "-" & bulan
+        Dim parseDate = DateTime.Parse(blnThn)
+        Dim DaysInMonth As Integer = Date.DaysInMonth(parseDate.Year, parseDate.Month)
+        Dim LastDayInMonthDate As Date = New Date(parseDate.Year, parseDate.Month, DaysInMonth)
+        Dim format As String = "yyyy-MM-dd"
+        Dim periode = LastDayInMonthDate.ToString(format)
 
         Dim args_query(3) As String
         args_query(0) = periode
@@ -1139,7 +1164,7 @@ Public Class Form1
         Dim sTemp As String = Nothing
         Dim filePath As String = txtLokasiFolderKB.Text
 
-        For Each filename As String In IO.Directory.GetFiles(Directory, "*.xlsx", IO.SearchOption.AllDirectories)
+        For Each filename As String In IO.Directory.GetFiles(directory, "*.xlsx", IO.SearchOption.AllDirectories)
 
             Console.WriteLine()
             sendFileFtp(filename)
@@ -1279,5 +1304,6 @@ Public Class Form1
 
         Me.Cursor = Cursors.Default
     End Function
+
 
 End Class
